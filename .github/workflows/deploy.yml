@@ -3,7 +3,7 @@ name: Deploy to Cloud Run
 on:
   push:
     branches:
-      - main  # nebo master, podle toho, jak se jmenuje vaše hlavní větev
+      - master  # nebo master, podle toho, jak se jmenuje vaše hlavní větev
 
 jobs:
   deploy:
