@@ -25,10 +25,13 @@ export default {
       // get the visitor by id
       const visitor = await Service.getVisitor(visitorId);
 
+      // Convert mongoose document to plain object
+      const visitorObj = visitor.toObject ? visitor.toObject() : visitor;
+
       // send the visitor (200: OK)
       res.status(200).json({
         success: true,
-        data: { ...visitor },
+        data: visitorObj,
       });
     } catch (error) {
       // pass the error to the error handler middleware
@@ -43,10 +46,13 @@ export default {
       // update the visitor
       const visitor = await Service.updateVisitor(visitorId, req.body);
 
+      // Convert mongoose document to plain object
+      const visitorObj = visitor.toObject ? visitor.toObject() : visitor;
+
       // send the updated visitor (200: OK)
       res.status(200).json({
         success: true,
-        data: { ...visitor },
+        data: visitorObj,
       });
     } catch (error) {
       // pass the error to the error handler middleware

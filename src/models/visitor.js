@@ -24,6 +24,7 @@ const visitorSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      lowercase: true, // Add this to normalize email to lowercase
       validate: (value) => validator.isEmail(value.trim()),
     },
     // phone: string, required, trimmed, mobile phone
