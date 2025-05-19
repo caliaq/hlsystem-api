@@ -1,5 +1,28 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
+
+// Get directory name for ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, "../../");
+
+// Update the apis array with better ordering
+const apis = [
+  // Core definitions first
+  path.join(rootDir, "src/docs/tags.js"),
+
+  // Component schemas (followed by responses to allow references)
+  path.join(rootDir, "src/docs/schemas/visitor.js"),
+  path.join(rootDir, "src/docs/schemas/examples.js"),
+  path.join(rootDir, "src/docs/schemas/responses/*.js"),
+  path.join(rootDir, "src/docs/schemas/parameters.js"),
+
+  // Endpoints last (they reference components)
+  path.join(rootDir, "src/docs/paths/visitors/*.js"),
+];
 
 // Swagger definition
 const options = {
@@ -22,110 +45,41 @@ const options = {
         description: "Local development server",
       },
     ],
+    // Initialize all components to prevent reference errors
     components: {
-      schemas: {
-        Visitor: {
-          type: "object",
-          required: ["firstName", "lastName", "email", "phone"],
-          properties: {
-            _id: {
-              type: "string",
-              description:
-                "Auto-generated MongoDB ObjectID that uniquely identifies the visitor record in the database",
-            },
-            firstName: {
-              type: "string",
-              description:
-                "First name of the visitor (2-50 alphabetic characters only, no special characters or numbers allowed)",
-            },
-            lastName: {
-              type: "string",
-              description:
-                "Last name of the visitor (2-50 alphabetic characters only, no special characters or numbers allowed)",
-            },
-            email: {
-              type: "string",
-              format: "email",
-              description:
-                "Valid email address of the visitor (must include @ and domain, e.g., name@example.com)",
-            },
-            phone: {
-              type: "string",
-              description:
-                "Mobile phone number of the visitor in international format (e.g., +420776504630). Used for access notifications and security verification.",
-            },
-            licensePlate: {
-              type: "string",
-              description:
-                "Vehicle registration plate number (optional, alphanumeric, max 15 characters). Required only if visitor arrives by car and needs parking access.",
-            },
-          },
-          example: {
-            firstName: "John",
-            lastName: "Doe",
-            email: "john.doe@example.com",
-            phone: "+420776504630",
-            licensePlate: "ABC123",
-          },
-        },
-        Error: {
-          type: "object",
-          properties: {
-            success: {
-              type: "boolean",
-              description:
-                "Indicates whether the request was successful (always false for error responses)",
-              example: false,
-            },
-            data: {
-              type: "object",
-              description: "Container for detailed error information",
-              properties: {
-                message: {
-                  type: "string",
-                  description:
-                    "Human-readable error message explaining what went wrong and possibly how to fix it",
-                  example: "EMAIL:invalid-email is invalid",
-                },
-                timestamp: {
-                  type: "string",
-                  format: "date-time",
-                  description:
-                    "ISO 8601 formatted date and time when the error occurred",
-                  example: "2025-05-19T12:00:00.000Z",
-                },
-                path: {
-                  type: "string",
-                  description:
-                    "The API endpoint path that was accessed when the error occurred",
-                  example: "/visitors",
-                },
-                method: {
-                  type: "string",
-                  description:
-                    "The HTTP method used in the request (GET, POST, PUT, DELETE, etc.)",
-                  example: "POST",
-                },
-                code: {
-                  type: "string",
-                  description:
-                    "HTTP status code description corresponding to the error type",
-                  example: "Bad Request",
-                },
-              },
-            },
-          },
-        },
-      },
+      schemas: {},
+      examples: {},
+      responses: {},
+      parameters: {},
     },
   },
-  apis: ["./src/routes/*.js", "./src/controllers/*.js", "./src/models/*.js"], // Path to the API docs
+  // Clear organization of API files - loading order is critical!
+  apis: apis,
+  // Add these options for better debugging
+  failOnErrors: true, // Enable to catch reference errors
 };
 
 // Initialize swagger-jsdoc
 const specs = swaggerJsdoc(options);
 
+// Optional: Write the generated spec to a file for debugging
+// fs.writeFileSync(path.join(rootDir, 'swagger-output.json'), JSON.stringify(specs, null, 2));
+
 export default {
   serve: swaggerUi.serve,
-  setup: swaggerUi.setup(specs, { explorer: true }),
+  setup: swaggerUi.setup(specs, {
+    explorer: true,
+    customCss: `.swagger-ui .topbar { display: none }
+                .swagger-ui .info { margin: 30px 0 }
+                .swagger-ui .scheme-container { margin: 30px 0 }`,
+    swaggerOptions: {
+      docExpansion: "none", // Collapse all endpoints by default
+      filter: true,
+      tagsSorter: "alpha",
+      operationsSorter: "method",
+      persistAuthorization: true,
+      defaultModelsExpandDepth: 1,
+      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
+    },
+  }),
 };
