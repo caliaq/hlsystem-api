@@ -16,12 +16,16 @@ const apis = [
 
   // Component schemas (followed by responses to allow references)
   path.join(rootDir, "src/docs/schemas/visitor.js"),
+  path.join(rootDir, "src/docs/schemas/product.js"),
+  path.join(rootDir, "src/docs/schemas/order.js"),
   path.join(rootDir, "src/docs/schemas/examples.js"),
   path.join(rootDir, "src/docs/schemas/responses/*.js"),
   path.join(rootDir, "src/docs/schemas/parameters.js"),
 
   // Endpoints last (they reference components)
   path.join(rootDir, "src/docs/paths/visitors/*.js"),
+  path.join(rootDir, "src/docs/paths/orders/*.js"),
+  path.join(rootDir, "src/docs/paths/products/*.js"),
 ];
 
 // Swagger definition
