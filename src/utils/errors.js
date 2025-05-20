@@ -1,4 +1,3 @@
-// AppError: error for custom messages in errorHandler middleware
 export class AppError extends Error {
   constructor(path, value, statusCode) {
     // call the parent constructor (parsed error message)
