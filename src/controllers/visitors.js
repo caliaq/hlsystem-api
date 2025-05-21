@@ -2,6 +2,21 @@
 import Service from "#services/visitors";
 
 export default {
+  getVisitors: async (req, res, next) => {
+    try {
+      // get all visitors
+      const visitors = await Service.getVisitors();
+
+      // send the visitors (200: OK)
+      res.status(200).json({
+        success: true,
+        data: visitors,
+      });
+    } catch (error) {
+      // pass the error to the error handler middleware
+      next(error);
+    }
+  },
   addVisitor: async (req, res, next) => {
     try {
       // create a new visitor

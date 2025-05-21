@@ -4,6 +4,18 @@ import Visitor from "#models/visitor";
 import { AppError } from "#utils/errors";
 
 export default {
+  getVisitors: async function () {
+    // get all visitors
+    const visitors = await Visitor.find();
+
+    // Convert mongoose documents to plain objects
+    const visitorsObj = visitors.map((visitor) =>
+      visitor.toObject ? visitor.toObject() : visitor
+    );
+
+    // return the visitors
+    return visitorsObj;
+  },
   createVisitor: async function (data) {
     try {
       // create a new visitor instance

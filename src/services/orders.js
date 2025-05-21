@@ -6,6 +6,18 @@ import Product from "#models/product";
 import { AppError } from "#utils/errors";
 
 export default {
+  getOrders: async function () {
+    // get all orders
+    const orders = await Order.find();
+
+    // Convert mongoose documents to plain objects
+    const ordersObj = orders.map((order) =>
+      order.toObject ? order.toObject() : order
+    );
+
+    // return the orders
+    return ordersObj;
+  },
   createOrder: async function (data) {
     try {
       // Create and save the order
