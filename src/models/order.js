@@ -1,6 +1,6 @@
 // imports
+import mongoose, { Schema, model } from "mongoose";
 import validator from "validator";
-import { Schema, model } from "mongoose";
 
 // order schema
 const orderSchema = new Schema(
@@ -10,12 +10,16 @@ const orderSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
       ref: "Visitor",
+      validate: async (value) =>
+        !!(await mongoose.model("Visitor").findById(value)),
     },
     // productId: mongoId, required
     productId: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: "Product",
+      validate: async (value) =>
+        !!(await mongoose.model("Product").findById(value)),
     },
     // startDate: date, required
     startDate: {

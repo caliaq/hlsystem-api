@@ -1,22 +1,24 @@
 // imports
 import validator from "validator";
 import Order from "#models/order";
+import Visitor from "#models/visitor";
+import Product from "#models/product";
 import { AppError } from "#utils/errors";
 
 export default {
   createOrder: async function (data) {
     try {
-      // create a new order instance
+      // Create a new order instance
       const order = new Order(data);
 
-      // validate and save the order instance
+      // Validate and save the order instance
       await order.validate();
       await order.save();
 
-      // return the order id
+      // Return the order id
       return order._id;
     } catch (error) {
-      // throw the last error
+      // Handle validation errors
       if (error.errors) {
         const errors = Object.values(error.errors);
         throw errors[errors.length - 1];

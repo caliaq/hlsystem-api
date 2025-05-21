@@ -2,6 +2,21 @@
 import Service from "#services/products";
 
 export default {
+  getProducts: async (req, res, next) => {
+    try {
+      // get all products
+      const products = await Service.getProducts();
+
+      // send the products (200: OK)
+      res.status(200).json({
+        success: true,
+        data: products,
+      });
+    } catch (error) {
+      // pass the error to the error handler middleware
+      next(error);
+    }
+  },
   addProduct: async (req, res, next) => {
     try {
       // create a new product

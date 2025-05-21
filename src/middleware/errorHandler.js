@@ -7,7 +7,11 @@ export function errorHandler(err, req, res, next) {
   let { statusCode, message } = err;
 
   // mongoose validator error message parsing and status code assigning
-  if (err instanceof mongoose.Error.ValidatorError) {
+  if (
+    err instanceof mongoose.Error.ValidatorError ||
+    err instanceof mongoose.Error.CastError ||
+    err instanceof mongoose.Error.DocumentNotFoundError
+  ) {
     message = `${err.path.toUpperCase()}:${err.value} is invalid`;
     statusCode = 400;
   }

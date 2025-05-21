@@ -4,6 +4,16 @@ import Product from "#models/product";
 import { AppError } from "#utils/errors";
 
 export default {
+  getProducts: async function () {
+    // get all products
+    const products = await Product.find();
+    // Convert mongoose documents to plain objects
+    const productsObj = products.map((product) =>
+      product.toObject ? product.toObject() : product
+    );
+    // return the products
+    return productsObj;
+  },
   createProduct: async function (data) {
     try {
       // create a new product instance
