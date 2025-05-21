@@ -25,7 +25,10 @@ const orderSchema = new Schema(
     startDate: {
       type: Date,
       required: true,
-      validate: (value) => validator.isDate(value.toString()),
+      validate: {
+        validator: (value) => !isNaN(new Date(value).getTime()),
+        message: "Invalid startDate format",
+      },
     },
     // duration: number, required, numeric (in milliseconds)
     duration: {

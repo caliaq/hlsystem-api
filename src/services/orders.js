@@ -8,17 +8,13 @@ import { AppError } from "#utils/errors";
 export default {
   createOrder: async function (data) {
     try {
-      // Create a new order instance
+      // Create and save the order
       const order = new Order(data);
-
-      // Validate and save the order instance
       await order.validate();
       await order.save();
 
-      // Return the order id
       return order._id;
     } catch (error) {
-      // Handle validation errors
       if (error.errors) {
         const errors = Object.values(error.errors);
         throw errors[errors.length - 1];
