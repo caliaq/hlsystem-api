@@ -2,6 +2,21 @@
 import Service from "#services/orders";
 
 export default {
+  getOrders: async (req, res, next) => {
+    try {
+      // get all orders
+      const orders = await Service.getOrders();
+
+      // send the orders (200: OK)
+      res.status(200).json({
+        success: true,
+        data: orders,
+      });
+    } catch (error) {
+      // pass the error to the error handler middleware
+      next(error);
+    }
+  },
   addOrder: async (req, res, next) => {
     try {
       // create a new order
