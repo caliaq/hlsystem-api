@@ -34,5 +34,17 @@ services:
     command: -c "while true; do /backup.sh; sleep 3600; done"
     restart: unless-stopped
 
+  ai:
+    build: ./ai
+    volumes:
+      - ./ai:/app
+    ports:
+      - "8000:8000"  # Můžeš změnit dle potřeby
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
 volumes:
   mongo-data:
