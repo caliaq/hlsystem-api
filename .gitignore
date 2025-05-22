@@ -3,3 +3,4 @@ backups
 
 # Soubory
 *.env
+.DS_Store

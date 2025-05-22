@@ -1,7 +1,16 @@
 import cv2 as cv
 import numpy as np
 import easyocr
-import time
+import time, os
+# Add Flask imports
+from flask import Flask, Response
+import threading
+from dotenv import load_dotenv
+
+load_dotenv()
+PORT = int(os.getenv("PORT", 3000))
+MODEL_CONFIG_PATH = os.getenv("MODEL_CONFIG_PATH", "model/darknet-yolov3.cfg")
+MODEL_WEIGHTS_PATH = os.getenv("MODEL_WEIGHTS_PATH", "model/model.weights")
 
 # initialize the parameters
 confThreshold = 0.5  # confidence threshold
@@ -12,11 +21,7 @@ inpHeight = 416      # height of network's input image
 classes = ["License Plate"]
 license_plates = ["EL106AC", "8AN4277", "BLBECEK", "B2228HM"]
 
-# load YOLO model
-modelConfiguration = "model/darknet-yolov3.cfg"
-modelWeights = "model/model.weights"
-
-net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
+net = cv.dnn.readNetFromDarknet(MODEL_CONFIG_PATH, MODEL_WEIGHTS_PATH)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
 net.setPreferableTarget(cv.dnn.DNN_TARGET_CPU)
 
@@ -233,7 +238,7 @@ def getOutputsNames(net):
         return [layersNames[unconnected_out_layers - 1]]
 
 # Draw the predicted bounding box
-def drawPred(classId, conf, left, top, right, bottom):
+def drawPred(frame, classId, conf, left, top, right, bottom):
     if classes:
         assert(classId < len(classes))
         if classes[classId].lower() in ['license plate', 'license-plate', 'licenseplate', 'number plate', 'plate']:
@@ -270,7 +275,7 @@ def postprocess(frame, outs):
         for i in indices.flatten():
             box = boxes[i]
             left, top, width, height = box
-            drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
+            drawPred(frame, classIds[i], confidences[i], left, top, left + width, top + height)
 
 # Draw the authentication system state UI
 def draw_auth_ui(frame):
@@ -323,39 +328,82 @@ def draw_auth_ui(frame):
     cv.putText(frame, status_text, (30, frame.shape[0] - 30), 
                cv.FONT_HERSHEY_SIMPLEX, 1.2, status_color, 3)
 
-# Initialize video stream
-winName = 'License Plate Authentication System'
-cv.namedWindow(winName, cv.WINDOW_NORMAL)
+# Create Flask app
+app = Flask(__name__)
 
-cap = cv.VideoCapture(0)
+# Global variables for streaming
+outputFrame = None
+lock = threading.Lock()
 
-while True:
-    hasFrame, frame = cap.read()
-    if not hasFrame:
-        cv.waitKey(3000)
-        break
+# Generate frames for the stream
+def generate():
+    global outputFrame, lock
+    
+    while True:
+        with lock:
+            if outputFrame is None:
+                continue
+                
+            # Encode the frame as JPEG
+            _, buffer = cv.imencode('.jpg', outputFrame)
+            frame_bytes = buffer.tobytes()
+            
+        # Yield the frame in HTTP multipart format
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-    # Only process frames if not in access granted state
-    if auth_state != AUTH_STATE_ACCESS_GRANTED:
-        blob = cv.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0,0,0], 1, crop=False)
-        net.setInput(blob)
-        outs = net.forward(getOutputsNames(net))
-        postprocess(frame, outs)
+# Route for the video stream
+@app.route('/')
+def video_feed():
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    # Draw authentication UI
-    draw_auth_ui(frame)
 
-    # Display performance info
-    t, _ = net.getPerfProfile()
-    inference_time = t * 1000.0 / cv.getTickFrequency()
-    cv.putText(frame, f"Inference: {inference_time:.1f}ms", 
-               (frame.shape[1] - 250, 30), cv.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+# Function to process frames and update the global outputFrame
+def process_frames():
+    global outputFrame, lock, auth_state, auth_start_time, plate_matches, access_granted_time, access_granted_plate
+    
+    # Initialize video stream
+    cap = cv.VideoCapture(0)
+    
+    while True:
+        hasFrame, frame = cap.read()
+        if not hasFrame:
+            time.sleep(1)
+            continue
 
-    cv.imshow(winName, frame)
+        # Only process frames if not in access granted state
+        if auth_state != AUTH_STATE_ACCESS_GRANTED:
+            blob = cv.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0,0,0], 1, crop=False)
+            net.setInput(blob)
+            outs = net.forward(getOutputsNames(net))
+            postprocess(frame, outs)
 
-    key = cv.waitKey(1) & 0xFF
-    if key == 27 or key == ord('q'):
-        break
+        # Draw authentication UI
+        draw_auth_ui(frame)
 
-cap.release()
+        # Display performance info
+        t, _ = net.getPerfProfile()
+        inference_time = t * 1000.0 / cv.getTickFrequency()
+        cv.putText(frame, f"Inference: {inference_time:.1f}ms", 
+                (frame.shape[1] - 250, 30), cv.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+
+        # Update the output frame
+        with lock:
+            outputFrame = frame.copy()
+            
+        # Short delay to reduce CPU usage
+        time.sleep(0.03)
+    
+    cap.release()
+
+# Entry point
+if __name__ == '__main__':
+    # Start frame processing in a separate thread
+    frame_thread = threading.Thread(target=process_frames)
+    frame_thread.daemon = True
+    frame_thread.start()
+
+    app.run(host='0.0.0.0', port=PORT, debug=False, threaded=True)
+
+# Release resources on exit
 cv.destroyAllWindows()
