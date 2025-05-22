@@ -1,1 +1,5 @@
+# Adresáře
 backups
+
+# Soubory
+*.env
