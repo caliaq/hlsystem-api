@@ -1,10 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
   api:
     build: ./api
     ports:
-      - "${PORT}:${PORT}"
+      - "${API_PORT}:${API_PORT}"
     depends_on:
       - mongo
     env_file:
@@ -39,9 +39,17 @@ services:
     volumes:
       - ./ai:/app
     ports:
-      - "8000:8000"  # Můžeš změnit dle potřeby
+      - "${AI_PORT}:${AI_PORT}"
     env_file:
       - .env
+    environment:
+      - AI_PORT=${AI_PORT}
+      - MODEL_CONFIG_PATH=${MODEL_CONFIG_PATH}
+      - MODEL_WEIGHTS_PATH=${MODEL_WEIGHTS_PATH}
+      - CAMERA=${CAMERA}
+    devices:
+      - /dev/video0:/dev/video0
+    privileged: true
     depends_on:
       - mongo
     restart: unless-stopped

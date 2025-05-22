@@ -8,9 +8,15 @@ import threading
 from dotenv import load_dotenv
 
 load_dotenv()
-PORT = int(os.getenv("PORT", 3000))
+PORT = int(os.getenv("AI_PORT", 3000))
+CAMERA = os.getenv("CAMERA", 0)  # Default to webcam if not specified
 MODEL_CONFIG_PATH = os.getenv("MODEL_CONFIG_PATH", "model/darknet-yolov3.cfg")
 MODEL_WEIGHTS_PATH = os.getenv("MODEL_WEIGHTS_PATH", "model/model.weights")
+
+# Create directory for EasyOCR models
+EASYOCR_MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "easyocr_models")
+os.makedirs(EASYOCR_MODEL_DIR, exist_ok=True)
+print(f"Using EasyOCR model directory: {EASYOCR_MODEL_DIR}")
 
 # initialize the parameters
 confThreshold = 0.5  # confidence threshold
@@ -25,8 +31,10 @@ net = cv.dnn.readNetFromDarknet(MODEL_CONFIG_PATH, MODEL_WEIGHTS_PATH)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
 net.setPreferableTarget(cv.dnn.DNN_TARGET_CPU)
 
-# initialize EasyOCR reader for license plate recognition
-reader = easyocr.Reader(['en'], gpu=False)
+# initialize EasyOCR reader for license plate recognition with custom model directory
+print("Initializing EasyOCR with custom model directory...")
+reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=EASYOCR_MODEL_DIR, download_enabled=True)
+print("EasyOCR initialization complete")
 
 # Authentication system states and variables
 AUTH_STATE_IDLE = 0
@@ -126,6 +134,7 @@ def process_license_plate(frame, left, top, width, height, confidence, pad=10):
     clean_text = get_text_from_license_plate(processed)
 
     if clean_text:
+        print(f"Recognized text: {clean_text}")
         access_granted, matched_plate = check_license_plate_access(clean_text)
         
         if access_granted and auth_state == AUTH_STATE_IDLE:
@@ -363,7 +372,7 @@ def process_frames():
     global outputFrame, lock, auth_state, auth_start_time, plate_matches, access_granted_time, access_granted_plate
     
     # Initialize video stream
-    cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(CAMERA)  # For macOS
     
     while True:
         hasFrame, frame = cap.read()
@@ -390,9 +399,6 @@ def process_frames():
         # Update the output frame
         with lock:
             outputFrame = frame.copy()
-            
-        # Short delay to reduce CPU usage
-        time.sleep(0.03)
     
     cap.release()
 
