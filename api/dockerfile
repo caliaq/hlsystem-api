@@ -9,6 +9,9 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
+# ...existing code...
+RUN npm install -g nodemon
+# ...existing code...
 
 # Copy the rest of the application
 COPY . .

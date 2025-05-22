@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./api
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - mongo
+    env_file:
+      - .env
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:6
+    volumes:
+      - mongo-data:/data/db
+      - ./backups:/backup
+      - ./mongo-init/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+    restart: unless-stopped
+
+  mongo-backup:
+    image: mongo:6
+    depends_on:
+      - mongo
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-backup/backup.sh:/backup.sh
+      - ./backups:/backup
+    entrypoint: /bin/bash
+    command: -c "while true; do /backup.sh; sleep 3600; done"
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
