@@ -1,21 +1,24 @@
 #!/bin/bash
 
-# Set the correct project ID
 PROJECT_ID="hlsystem-460320"
+TAG=$(date +%Y%m%d%H%M%S)
 
-# Build the Docker image with the correct registry path
-docker build --no-cache -t gcr.io/$PROJECT_ID/express-visitors-api .
+# Přihlášení a konfigurace projektu
+gcloud auth login
+gcloud config set project $PROJECT_ID
+gcloud auth configure-docker
 
-# Push the image to Google Container Registry
-docker push gcr.io/$PROJECT_ID/express-visitors-api 
+# Build image pro linux/amd64
+docker build --platform=linux/amd64 --no-cache -t gcr.io/$PROJECT_ID/express-visitors-api:$TAG .
 
-# gcloud auth login
+# Push na GCR
+docker push gcr.io/$PROJECT_ID/express-visitors-api:$TAG
 
-# Deploy to Google Cloud Run
+# Deploy do Cloud Run
 gcloud run deploy visitors-api \
-    --image gcr.io/$PROJECT_ID/express-visitors-api \
-    --project $PROJECT_ID \
-    --platform managed \
-    --region europe-west1 \
-    --allow-unauthenticated \
-    --set-env-vars="MONGODB_URI=mongodb+srv://ejaprrr:ZxcXbkT9ok3DBJFM@lom.i8676.mongodb.net/?retryWrites=true&w=majority&appName=lom"
+  --image gcr.io/$PROJECT_ID/express-visitors-api:$TAG \
+  --platform managed \
+  --region europe-west1 \
+  --project $PROJECT_ID \
+  --allow-unauthenticated \
+  --set-env-vars="MONGODB_URI=mongodb+srv://ejaprrr:ZxcXbkT9ok3DBJFM@lom.i8676.mongodb.net/?retryWrites=true&w=majority&appName=lom"

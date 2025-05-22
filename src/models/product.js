@@ -10,9 +10,7 @@ const productSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      validate: (value) =>
-        validator.isAlpha(value, "cs-CZ", { ignore: " " }) &&
-        validator.isLength(value, { min: 0, max: 100 }),
+      validate: (value) => validator.isLength(value, { min: 0, max: 100 }),
     },
     // price: number, required, numeric
     price: {
@@ -25,6 +23,10 @@ const productSchema = new Schema(
       type: String,
       trim: true,
       validate: (value) => validator.isLength(value, { min: 0, max: 500 }),
+    },
+    visitor_required: {
+      type: Boolean,
+      default: false,
     },
   },
   // remove the version key

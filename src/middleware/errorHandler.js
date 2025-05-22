@@ -1,6 +1,7 @@
 // imports
 import mongoose from "mongoose";
 import http from "http";
+import { error } from "console";
 
 // error handler middleware
 export function errorHandler(err, req, res, next) {
@@ -19,6 +20,11 @@ export function errorHandler(err, req, res, next) {
   // send error response
   res.status(statusCode || 500).json({
     success: false,
+    error: {
+      name: err.name,
+      message: message || "Something went wrong",
+      stack: process.env.NODE_ENV === "production" ? null : err.stack,
+    },
     data: {
       message: message || "Something went wrong",
       timestamp: new Date().toISOString(),
