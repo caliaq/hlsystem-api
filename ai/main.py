@@ -172,7 +172,7 @@ def process_frames():
     global outputFrame, lock, auth_state, auth_start_time, plate_matches, access_granted_time, access_granted_plate
     
     # Initialize video stream
-    cap = VideoCaptureThreaded("http://localhost:5001")  # For macOS
+    cap = VideoCaptureThreaded(CAMERA)  # For macOS
 
     while True:
         ret, frame = cap.read()  # Properly unpack the return values
