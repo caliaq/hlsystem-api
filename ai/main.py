@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 PORT = int(os.getenv("AI_PORT", 3000))
-CAMERA = os.getenv("CAMERA", 0)  # Default to webcam if not specified
+CAMERA = os.getenv("CAMERA", 0) # Default to webcam if not specified
 MODEL_CONFIG_PATH = os.getenv("MODEL_CONFIG_PATH", "model/darknet-yolov3.cfg")
 MODEL_WEIGHTS_PATH = os.getenv("MODEL_WEIGHTS_PATH", "model/model.weights")
 
@@ -366,13 +366,41 @@ def generate():
 def video_feed():
     return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+class VideoCaptureThreaded:
+    def __init__(self, src):
+        self.stream = cv.VideoCapture(src)
+        self.ret = False
+        self.frame = None
+        self.lock = threading.Lock()
+        self.running = True
+
+        thread = threading.Thread(target=self.update, daemon=True)
+        thread.start()
+
+    def update(self):
+        while self.running:
+            if not self.stream.isOpened():
+                time.sleep(1)
+                continue
+            ret, frame = self.stream.read()
+            with self.lock:
+                self.ret = ret
+                self.frame = frame
+
+    def read(self):
+        with self.lock:
+            return self.ret, self.frame
+
+    def release(self):
+        self.running = False
+        self.stream.release()
 
 # Function to process frames and update the global outputFrame
 def process_frames():
     global outputFrame, lock, auth_state, auth_start_time, plate_matches, access_granted_time, access_granted_plate
     
     # Initialize video stream
-    cap = cv.VideoCapture(CAMERA)  # For macOS
+    cap = VideoCaptureThreaded(CAMERA)  # For macOS
     
     while True:
         hasFrame, frame = cap.read()
