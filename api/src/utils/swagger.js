@@ -33,10 +33,10 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Visitors API Documentation",
+      title: "LOM API Documentation",
       version: "1.0.0",
       description:
-        "A comprehensive REST API for managing visitor registration, tracking, and information management. This API enables creating, retrieving, updating, and deleting visitor records while ensuring data validation and security.",
+        "A comprehensive REST API for managing visitors, products, and orders. This API enables creating, retrieving, updating, and deleting records for visitor registration, product management, and order processing while ensuring data validation and security.",
       contact: {
         name: "caliaq",
         email: "support@caliaq.dev",

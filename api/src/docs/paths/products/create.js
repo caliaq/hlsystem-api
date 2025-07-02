@@ -1,5 +1,11 @@
 /**
- * @openapi
+ *     description: |
+       Creates a new product record in the system.
+       All required fields undergo validation:
+       - Name must be at most 100 characters
+       - Price must be a valid number
+       - Description is optional but limited to 500 characters if provided
+       - visitor_required is optional and defaults to falseapi
  * /products:
  *   post:
  *     operationId: createProduct
@@ -22,10 +28,12 @@
  *                 name: "Premium Parking"
  *                 price: 150
  *                 description: "Premium parking spot with direct access to the main entrance"
+ *                 visitor_required: true
  *             basicProduct:
  *               value:
  *                 name: "Standard Parking"
  *                 price: 100
+ *                 visitor_required: false
  *     responses:
  *       201:
  *         description: Product successfully created and assigned a unique identifier

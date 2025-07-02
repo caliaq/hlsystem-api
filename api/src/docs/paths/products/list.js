@@ -37,9 +37,11 @@
  *                   name: "Premium Parking"
  *                   price: 150
  *                   description: "Premium parking spot with direct access to the main entrance"
+ *                   visitor_required: true
  *                 - _id: "60d21b4667d0d8992e610c89"
  *                   name: "Standard Parking"
  *                   price: 100
+ *                   visitor_required: false
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */

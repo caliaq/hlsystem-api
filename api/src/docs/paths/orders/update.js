@@ -25,29 +25,40 @@
  *                 type: string
  *                 format: objectId
  *                 description: Updated reference to visitor
- *               productId:
- *                 type: string
- *                 format: objectId
- *                 description: Updated reference to product
- *               startDate:
+ *               products:
+ *                 type: array
+ *                 description: Updated array of products in the order
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productId:
+ *                       type: string
+ *                       format: objectId
+ *                       description: Reference to the product
+ *                     quantity:
+ *                       type: number
+ *                       description: Quantity of the product (maximum 99)
+ *                       minimum: 1
+ *                       maximum: 99
+ *                     duration:
+ *                       type: number
+ *                       description: Duration in milliseconds (optional)
+ *               date:
  *                 type: string
  *                 format: date-time
- *                 description: Updated start date and time
- *               duration:
- *                 type: number
- *                 description: Updated duration in milliseconds
- *               quantity:
- *                 type: number
- *                 description: Updated quantity (maximum 99)
+ *                 description: Updated order date and time
  *           examples:
  *             changeDate:
  *               summary: Update order date and time
  *               value:
- *                 startDate: "2025-06-16T14:00:00.000Z"
- *             changeQuantity:
- *               summary: Update order quantity
+ *                 date: "2025-06-16T14:00:00.000Z"
+ *             changeProducts:
+ *               summary: Update order products
  *               value:
- *                 quantity: 3
+ *                 products:
+ *                   - productId: "60d21b4667d0d8992e610c86"
+ *                     quantity: 3
+ *                     duration: 7200000
  *     responses:
  *       200:
  *         description: Order information successfully updated
@@ -71,10 +82,11 @@
  *               data:
  *                 _id: "60d21b4667d0d8992e610c87"
  *                 visitorId: "60d21b4667d0d8992e610c85"
- *                 productId: "60d21b4667d0d8992e610c86"
- *                 startDate: "2025-06-16T14:00:00.000Z"
- *                 duration: 3600000
- *                 quantity: 3
+ *                 products:
+ *                   - productId: "60d21b4667d0d8992e610c86"
+ *                     quantity: 3
+ *                     duration: 3600000
+ *                 date: "2025-06-16T14:00:00.000Z"
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  *       404:
