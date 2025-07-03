@@ -33,10 +33,11 @@
  *               data:
  *                 _id: "60d21b4667d0d8992e610c87"
  *                 visitorId: "60d21b4667d0d8992e610c85"
- *                 productId: "60d21b4667d0d8992e610c86"
- *                 startDate: "2025-06-15T10:00:00.000Z"
- *                 duration: 3600000
- *                 quantity: 2
+ *                 products:
+ *                   - productId: "60d21b4667d0d8992e610c86"
+ *                     quantity: 2
+ *                     duration: 3600000
+ *                 date: "2025-06-15T10:00:00.000Z"
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  *       404:

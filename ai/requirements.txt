@@ -3,4 +3,4 @@ numpy
 easyocr
 flask
 pillow
-dotenv
+python-dotenv

@@ -1,5 +1,12 @@
 /**
- * @openapi
+ *     description: |
+       Creates a new order record in the system linking a visitor to one or more products.
+       All required fields undergo validation:
+       - Visitor ID must be a valid MongoDB ObjectID
+       - Products array must contain at least one product with valid ProductID
+       - Date must be a valid date
+       - Duration (optional) must be a positive number in milliseconds
+       - Quantity must be a positive number not exceeding 99i
  * /orders:
  *   post:
  *     operationId: createOrder
@@ -23,10 +30,11 @@
  *             standardOrder:
  *               value:
  *                 visitorId: "60d21b4667d0d8992e610c85"
- *                 productId: "60d21b4667d0d8992e610c86"
- *                 startDate: "2025-06-15T10:00:00.000Z"
- *                 duration: 3600000
- *                 quantity: 2
+ *                 products:
+ *                   - productId: "60d21b4667d0d8992e610c86"
+ *                     quantity: 2
+ *                     duration: 3600000
+ *                 date: "2025-06-15T10:00:00.000Z"
  *     responses:
  *       201:
  *         description: Order successfully created and assigned a unique identifier
