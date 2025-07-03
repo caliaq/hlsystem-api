@@ -1,10 +1,24 @@
 version: "3.8"
 
 services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - api
+      - ai
+      - mongo-express
+    restart: unless-stopped
+
   api:
     build: ./api
-    ports:
-      - "${API_PORT}:${API_PORT}"
+    expose:
+      - "8080"
     depends_on:
       - mongo
     env_file:
@@ -16,10 +30,25 @@ services:
 
   mongo:
     image: mongo:6
+    ports:
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
       - ./backups:/backup
       - ./mongo-init/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+    restart: unless-stopped
+
+  mongo-express:
+    image: mongo-express:latest
+    expose:
+      - "8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    depends_on:
+      - mongo
     restart: unless-stopped
 
   mongo-backup:
@@ -39,7 +68,7 @@ services:
     volumes:
       - ./ai:/app
     ports:
-      - "${AI_PORT}:${AI_PORT}"
+      - "8000:8000"  # Můžeš změnit dle potřeby
     env_file:
       - .env
     environment:
