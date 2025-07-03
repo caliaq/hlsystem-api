@@ -10,8 +10,43 @@ const gateSchema = new Schema(
       required: true,
       validate: (value) => validator.isAlpha(value, "cs-CZ", { ignore: " " }),
     },
+    cameras: {
+      entry: {
+        name: {
+          type: String,
+          required: true,
+          validate: (value) =>
+            validator.isAlpha(value, "cs-CZ", { ignore: " " }),
+        },
+        isActive: {
+          type: Boolean,
+          default: true,
+        },
+        streamUrl: {
+          type: String,
+          required: true,
+          validate: (value) => validator.isURL(value),
+        },
+        exit: {
+          name: {
+            type: String,
+            required: true,
+            validate: (value) =>
+              validator.isAlpha(value, "cs-CZ", { ignore: " " }),
+          },
+          isActive: {
+            type: Boolean,
+            default: true,
+          },
+          streamUrl: {
+            type: String,
+            required: true,
+            validate: (value) => validator.isURL(value),
+          },
+        },
+      },
+    },
   },
-  // remove the version key
   { versionKey: false }
 );
 
