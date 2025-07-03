@@ -17,8 +17,8 @@ services:
 
   api:
     build: ./api
-    ports:
-      - "${PORT}:${PORT}"
+    expose:
+      - "8080"
     depends_on:
       - mongo
     env_file:
