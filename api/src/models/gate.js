@@ -12,38 +12,14 @@ const gateSchema = new Schema(
     },
     cameras: {
       entry: {
-        name: {
-          type: String,
-          required: true,
-          validate: (value) =>
-            validator.isAlpha(value, "cs-CZ", { ignore: " " }),
-        },
-        isActive: {
-          type: Boolean,
-          default: true,
-        },
-        streamUrl: {
-          type: String,
-          required: true,
-          validate: (value) => validator.isURL(value),
-        },
-        exit: {
-          name: {
-            type: String,
-            required: true,
-            validate: (value) =>
-              validator.isAlpha(value, "cs-CZ", { ignore: " " }),
-          },
-          isActive: {
-            type: Boolean,
-            default: true,
-          },
-          streamUrl: {
-            type: String,
-            required: true,
-            validate: (value) => validator.isURL(value),
-          },
-        },
+        type: String,
+        required: true,
+        validate: (value) => validator.isURL(value),
+      },
+      exit: {
+        type: String,
+        required: true,
+        validate: (value) => validator.isURL(value),
       },
     },
   },
