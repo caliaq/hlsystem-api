@@ -24,13 +24,12 @@ export default {
     try {
       const { gateId } = req.params;
       // get gate status
-      const req = await Service.getGateStatus(gateId);
-      const { data } = await req.json();
+      const gateStatus = await Service.getGateStatus(gateId);
 
       // send the status (200: OK)
       res.status(200).json({
         success: true,
-        data,
+        data: gateStatus,
       });
     } catch (error) {
       // pass the error to the error handler middleware
