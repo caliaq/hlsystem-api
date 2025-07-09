@@ -1,9 +1,11 @@
 import "dotenv/config";
 
 import Gate from "#models/gate";
+import { AppError } from "#utils/errors";
 const { GATE_CONTROLLER_URL } = process.env;
+import validator from "validator";
 
-export default {
+const gateService = {
   getGate: async (gateId) => {
     // validate the gate id format
     if (!validator.isMongoId(gateId)) {
@@ -22,30 +24,33 @@ export default {
     return gate;
   },
   getGateStatus: async (gateId) => {
-    const { data } = await fetch(
-      `${GATE_CONTROLLER_URL}/gate/${gateId}/status`
-    );
+    const req = await fetch(`${GATE_CONTROLLER_URL}/gate/${gateId}/status`);
+
+    const { data } = await req.json();
+
     return {
       isOpen: data.is_open,
     };
   },
   toggleGate: async (gateId) => {
-    const { status, data } = await fetch(
+    const response = await fetch(
       `${GATE_CONTROLLER_URL}/gate/${gateId}/toggle`
     );
-    if (status != "success") {
+    const { status, data } = await response.json();
+
+    if (status !== "success") {
       throw new Error("Failed to toggle gate status");
     }
     return data;
   },
   openGate: async (gateId) => {
-    const isOpen = getGateStatus(gateId).data.is_open;
+    const { isOpen } = await gateService.getGateStatus(gateId);
 
     if (isOpen) {
       console.log(`Gate ${gateId} is already open.`);
       return true; // No need to open again
     } else {
-      const { is_open } = await toggleGate(gateId);
+      const { is_open } = await gateService.toggleGate(gateId);
       if (!is_open) {
         throw new Error(`Failed to open gate ${gateId}`);
       }
@@ -56,13 +61,13 @@ export default {
   },
 
   closeGate: async (gateId) => {
-    const isOpen = getGateStatus(gateId).data.is_open;
+    const { isOpen } = await gateService.getGateStatus(gateId);
 
     if (!isOpen) {
       console.log(`Gate ${gateId} is already closed.`);
       return true; // No need to close again
     } else {
-      const { is_open } = await toggleGate(gateId);
+      const { is_open } = await gateService.toggleGate(gateId);
       if (is_open) {
         throw new Error(`Failed to close gate ${gateId}`);
       }
@@ -72,3 +77,5 @@ export default {
     return true;
   },
 };
+
+export default gateService;
