@@ -9,12 +9,15 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
-# ...existing code...
+
+# Install nodemon globally
 RUN npm install -g nodemon
-# ...existing code...
 
 # Copy the rest of the application
 COPY . .
+
+# Ensure node_modules is properly installed after copying
+RUN npm install
 
 # Expose port from environment variable with fallback to 8080
 ENV PORT=8080
