@@ -20,11 +20,20 @@ services:
       - "8080"
     depends_on:
       - mongo
+      - gate-controller
     env_file:
       - .env
     volumes:
       - ./api:/app
       - /app/node_modules
+    restart: unless-stopped
+
+  gate-controller:
+    build: ./gate-controller
+    expose:
+      - "8080"
+    volumes:
+      - ./gate-controller:/app
     restart: unless-stopped
 
   mongo:

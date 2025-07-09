@@ -1,6 +1,9 @@
 import "dotenv/config";
+import validator from "validator";
 
 import Gate from "#models/gate";
+import AppError from "#utils/errors";
+
 const { GATE_CONTROLLER_URL } = process.env;
 
 export default {
@@ -22,30 +25,34 @@ export default {
     return gate;
   },
   getGateStatus: async (gateId) => {
-    const { data } = await fetch(
+    const response = await fetch(
       `${GATE_CONTROLLER_URL}/gate/${gateId}/status`
     );
+    const result = await response.json();
     return {
-      isOpen: data.is_open,
+      isOpen: result.data.is_open,
     };
   },
   toggleGate: async (gateId) => {
-    const { status, data } = await fetch(
-      `${GATE_CONTROLLER_URL}/gate/${gateId}/toggle`
+    const response = await fetch(
+      `${GATE_CONTROLLER_URL}/gate/${gateId}/toggle`,
+      { method: 'POST' }
     );
-    if (status != "success") {
+    const result = await response.json();
+    if (result.status !== "success") {
       throw new Error("Failed to toggle gate status");
     }
-    return data;
+    return result.data;
   },
   openGate: async (gateId) => {
-    const isOpen = getGateStatus(gateId).data.is_open;
+    const currentStatus = await this.getGateStatus(gateId);
+    const isOpen = currentStatus.isOpen;
 
     if (isOpen) {
       console.log(`Gate ${gateId} is already open.`);
       return true; // No need to open again
     } else {
-      const { is_open } = await toggleGate(gateId);
+      const { is_open } = await this.toggleGate(gateId);
       if (!is_open) {
         throw new Error(`Failed to open gate ${gateId}`);
       }
@@ -56,13 +63,14 @@ export default {
   },
 
   closeGate: async (gateId) => {
-    const isOpen = getGateStatus(gateId).data.is_open;
+    const currentStatus = await this.getGateStatus(gateId);
+    const isOpen = currentStatus.isOpen;
 
     if (!isOpen) {
       console.log(`Gate ${gateId} is already closed.`);
       return true; // No need to close again
     } else {
-      const { is_open } = await toggleGate(gateId);
+      const { is_open } = await this.toggleGate(gateId);
       if (is_open) {
         throw new Error(`Failed to close gate ${gateId}`);
       }
