@@ -26,6 +26,7 @@ const gateService = {
   },
   getGateStatus: async (gateId) => {
     try {
+      console.log(`Attempting to connect to gate controller at: ${GATE_CONTROLLER_URL}/gate/${gateId}/status`);
       const response = await fetch(
         `${GATE_CONTROLLER_URL}/gate/${gateId}/status`,
         {
@@ -39,21 +40,21 @@ const gateService = {
       );
 
       if (!response.ok) {
-        throw new AppError(
-          "gate_controller_error", 
-          `Gate controller returned ${response.status}: ${response.statusText}`, 
-          502
-        );
+        const error = new Error(`Gate controller returned ${response.status}: ${response.statusText}`);
+        error.statusCode = 502;
+        error.path = "gate_controller_error";
+        error.value = `HTTP ${response.status}`;
+        throw error;
       }
 
       const result = await response.json();
       
       if (result.status !== "success") {
-        throw new AppError(
-          "gate_status_error", 
-          result.message || "Failed to get gate status", 
-          502
-        );
+        const error = new Error(result.message || "Failed to get gate status");
+        error.statusCode = 502;
+        error.path = "gate_status_error";
+        error.value = result.message || "Failed to get gate status";
+        throw error;
       }
 
       return {
@@ -62,32 +63,37 @@ const gateService = {
     } catch (error) {
       // Handle network errors
       if (error.name === 'AbortError') {
-        throw new AppError(
-          "gate_controller_timeout", 
-          "Gate controller request timed out", 
-          504
-        );
+        const timeoutError = new Error("Gate controller request timed out");
+        timeoutError.statusCode = 504;
+        timeoutError.path = "gate_controller_timeout";
+        timeoutError.value = "5 second timeout exceeded";
+        throw timeoutError;
       }
       
-      if (error.cause?.code === 'ECONNREFUSED' || error.message.includes('fetch failed')) {
-        throw new AppError(
-          "gate_controller_unavailable", 
-          "Gate controller is not available. Please ensure the gate controller service is running.", 
-          503
-        );
+      if (error.cause?.code === 'ECONNREFUSED' || 
+          error.message.includes('fetch failed') || 
+          error.message.includes('ECONNREFUSED') ||
+          error.message.includes('ENOTFOUND') ||
+          error.code === 'ECONNREFUSED' ||
+          error.code === 'ENOTFOUND') {
+        const connectionError = new Error("Gate controller is not available. Please ensure the gate controller service is running.");
+        connectionError.statusCode = 503;
+        connectionError.path = "gate_controller_unavailable";
+        connectionError.value = "Service unavailable";
+        throw connectionError;
       }
       
-      // Re-throw AppError instances
-      if (error instanceof AppError) {
+      // Re-throw existing errors that already have the right structure
+      if (error.statusCode && error.path) {
         throw error;
       }
       
       // Handle other errors
-      throw new AppError(
-        "gate_controller_error", 
-        `Failed to communicate with gate controller: ${error.message}`, 
-        502
-      );
+      const genericError = new Error(`Failed to communicate with gate controller: ${error.message}`);
+      genericError.statusCode = 502;
+      genericError.path = "gate_controller_error";
+      genericError.value = error.message;
+      throw genericError;
     }
   },
   toggleGate: async (gateId) => {
@@ -104,53 +110,58 @@ const gateService = {
       );
 
       if (!response.ok) {
-        throw new AppError(
-          "gate_controller_error", 
-          `Gate controller returned ${response.status}: ${response.statusText}`, 
-          502
-        );
+        const error = new Error(`Gate controller returned ${response.status}: ${response.statusText}`);
+        error.statusCode = 502;
+        error.path = "gate_controller_error";
+        error.value = `HTTP ${response.status}`;
+        throw error;
       }
 
       const result = await response.json();
       
       if (result.status !== "success") {
-        throw new AppError(
-          "gate_toggle_error", 
-          result.message || "Failed to toggle gate", 
-          502
-        );
+        const error = new Error(result.message || "Failed to toggle gate");
+        error.statusCode = 502;
+        error.path = "gate_toggle_error";
+        error.value = result.message || "Failed to toggle gate";
+        throw error;
       }
 
       return result.data;
     } catch (error) {
       // Handle network errors
       if (error.name === 'AbortError') {
-        throw new AppError(
-          "gate_controller_timeout", 
-          "Gate controller request timed out", 
-          504
-        );
+        const timeoutError = new Error("Gate controller request timed out");
+        timeoutError.statusCode = 504;
+        timeoutError.path = "gate_controller_timeout";
+        timeoutError.value = "5 second timeout exceeded";
+        throw timeoutError;
       }
       
-      if (error.cause?.code === 'ECONNREFUSED' || error.message.includes('fetch failed')) {
-        throw new AppError(
-          "gate_controller_unavailable", 
-          "Gate controller is not available. Please ensure the gate controller service is running.", 
-          503
-        );
+      if (error.cause?.code === 'ECONNREFUSED' || 
+          error.message.includes('fetch failed') || 
+          error.message.includes('ECONNREFUSED') ||
+          error.message.includes('ENOTFOUND') ||
+          error.code === 'ECONNREFUSED' ||
+          error.code === 'ENOTFOUND') {
+        const connectionError = new Error("Gate controller is not available. Please ensure the gate controller service is running.");
+        connectionError.statusCode = 503;
+        connectionError.path = "gate_controller_unavailable";
+        connectionError.value = "Service unavailable";
+        throw connectionError;
       }
       
-      // Re-throw AppError instances
-      if (error instanceof AppError) {
+      // Re-throw existing errors that already have the right structure
+      if (error.statusCode && error.path) {
         throw error;
       }
       
       // Handle other errors
-      throw new AppError(
-        "gate_controller_error", 
-        `Failed to communicate with gate controller: ${error.message}`, 
-        502
-      );
+      const genericError = new Error(`Failed to communicate with gate controller: ${error.message}`);
+      genericError.statusCode = 502;
+      genericError.path = "gate_controller_error";
+      genericError.value = error.message;
+      throw genericError;
     }
   },
   openGate: async (gateId) => {
@@ -163,7 +174,11 @@ const gateService = {
     } else {
       const { is_open } = await this.toggleGate(gateId);
       if (!is_open) {
-        throw new AppError("gate_open_failed", `Failed to open gate ${gateId}`, 500);
+        const error = new Error(`Failed to open gate ${gateId}`);
+        error.statusCode = 500;
+        error.path = "gate_open_failed";
+        error.value = gateId;
+        throw error;
       }
       console.log(`Gate ${gateId} is now open.`);
     }
@@ -181,7 +196,11 @@ const gateService = {
     } else {
       const { is_open } = await this.toggleGate(gateId);
       if (is_open) {
-        throw new AppError("gate_close_failed", `Failed to close gate ${gateId}`, 500);
+        const error = new Error(`Failed to close gate ${gateId}`);
+        error.statusCode = 500;
+        error.path = "gate_close_failed";
+        error.value = gateId;
+        throw error;
       }
       console.log(`Gate ${gateId} is now closed.`);
     }
