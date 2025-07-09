@@ -2,7 +2,7 @@ import "dotenv/config";
 import validator from "validator";
 
 import Gate from "#models/gate";
-import AppError from "#utils/errors";
+import { AppError } from "#utils/errors";
 
 const { GATE_CONTROLLER_URL } = process.env;
 
@@ -163,7 +163,7 @@ const gateService = {
     } else {
       const { is_open } = await this.toggleGate(gateId);
       if (!is_open) {
-        throw new Error(`Failed to open gate ${gateId}`);
+        throw new AppError("gate_open_failed", `Failed to open gate ${gateId}`, 500);
       }
       console.log(`Gate ${gateId} is now open.`);
     }
@@ -181,7 +181,7 @@ const gateService = {
     } else {
       const { is_open } = await this.toggleGate(gateId);
       if (is_open) {
-        throw new Error(`Failed to close gate ${gateId}`);
+        throw new AppError("gate_close_failed", `Failed to close gate ${gateId}`, 500);
       }
       console.log(`Gate ${gateId} is now closed.`);
     }
