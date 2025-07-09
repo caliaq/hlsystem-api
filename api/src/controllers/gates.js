@@ -13,10 +13,6 @@ export default {
         data: {
           ...gate.toObject(),
           status: await Service.getGateStatus(gateId),
-          cameras: {
-            entry: await Service.getGateCamera(gateId, "entry"),
-            exit: await Service.getGateCamera(gateId, "exit"),
-          },
         },
       });
     } catch (error) {

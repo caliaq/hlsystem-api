@@ -24,10 +24,6 @@ const productSchema = new Schema(
       trim: true,
       validate: (value) => validator.isLength(value, { min: 0, max: 500 }),
     },
-    visitor_required: {
-      type: Boolean,
-      default: false,
-    },
   },
   // remove the version key
   { versionKey: false }

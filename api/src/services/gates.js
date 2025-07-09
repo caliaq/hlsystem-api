@@ -1,8 +1,7 @@
-import Gate from "#models/gate";
+import "dotenv/config";
 
-const data = {
-  isOpen: false,
-};
+import Gate from "#models/gate";
+const { GATE_CONTROLLER_URL } = process.env;
 
 export default {
   getGate: async (gateId) => {
@@ -23,34 +22,53 @@ export default {
     return gate;
   },
   getGateStatus: async (gateId) => {
+    const { data } = await fetch(
+      `${GATE_CONTROLLER_URL}/gate/${gateId}/status`
+    );
     return {
-      isOpen: data.isOpen,
-      isMoving: false,
-      lastUpdated: new Date().toISOString(),
+      isOpen: data.is_open,
     };
   },
-  getGateCamera: async (gateId, type) => {
-    return {
-      name: "Camera 1",
-      isActive: true,
-      streamUrl: `http://camera-${type}.example.com/stream`,
-    };
+  toggleGate: async (gateId) => {
+    const { status, data } = await fetch(
+      `${GATE_CONTROLLER_URL}/gate/${gateId}/toggle`
+    );
+    if (status != "success") {
+      throw new Error("Failed to toggle gate status");
+    }
+    return data;
   },
   openGate: async (gateId) => {
-    data.isOpen = true; // Simulating gate status based on data object
-    console.log(
-      `Gate ${gateId} status updated: ${data.isOpen ? "Open" : "Closed"}`
-    );
-    // Logic to open the gate
+    const isOpen = getGateStatus(gateId).data.is_open;
+
+    if (isOpen) {
+      console.log(`Gate ${gateId} is already open.`);
+      return true; // No need to open again
+    } else {
+      const { is_open } = await toggleGate(gateId);
+      if (!is_open) {
+        throw new Error(`Failed to open gate ${gateId}`);
+      }
+      console.log(`Gate ${gateId} is now open.`);
+    }
+
     return true;
   },
 
   closeGate: async (gateId) => {
-    data.isOpen = false; // Simulating gate status based on data object
-    console.log(
-      `Gate ${gateId} status updated: ${data.isOpen ? "Open" : "Closed"}`
-    );
-    // Logic to close the gate
+    const isOpen = getGateStatus(gateId).data.is_open;
+
+    if (!isOpen) {
+      console.log(`Gate ${gateId} is already closed.`);
+      return true; // No need to close again
+    } else {
+      const { is_open } = await toggleGate(gateId);
+      if (is_open) {
+        throw new Error(`Failed to close gate ${gateId}`);
+      }
+      console.log(`Gate ${gateId} is now closed.`);
+    }
+
     return true;
   },
 };

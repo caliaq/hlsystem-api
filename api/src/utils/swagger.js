@@ -18,6 +18,7 @@ const apis = [
   path.join(rootDir, "src/docs/schemas/visitor.js"),
   path.join(rootDir, "src/docs/schemas/product.js"),
   path.join(rootDir, "src/docs/schemas/order.js"),
+  path.join(rootDir, "src/docs/schemas/license-plate.js"),
   path.join(rootDir, "src/docs/schemas/examples.js"),
   path.join(rootDir, "src/docs/schemas/responses/*.js"),
   path.join(rootDir, "src/docs/schemas/parameters.js"),
@@ -26,6 +27,8 @@ const apis = [
   path.join(rootDir, "src/docs/paths/visitors/*.js"),
   path.join(rootDir, "src/docs/paths/orders/*.js"),
   path.join(rootDir, "src/docs/paths/products/*.js"),
+  path.join(rootDir, "src/docs/paths/license-plates/*.js"),
+  path.join(rootDir, "src/docs/paths/license-plate-image/*.js"),
 ];
 
 // Swagger definition

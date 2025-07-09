@@ -34,12 +34,6 @@ const visitorSchema = new Schema(
       trim: true,
       validate: (value) => validator.isMobilePhone(value.trim()),
     },
-    // licensePlate: string, trimmed, license plate
-    licensePlate: {
-      type: String,
-      trim: true,
-      validate: (value) => validator.isLicensePlate(value.trim(), "any"),
-    },
   },
   // remove the version key
   { versionKey: false }

@@ -10,8 +10,19 @@ const gateSchema = new Schema(
       required: true,
       validate: (value) => validator.isAlpha(value, "cs-CZ", { ignore: " " }),
     },
+    cameras: {
+      entry: {
+        type: String,
+        required: true,
+        validate: (value) => validator.isURL(value),
+      },
+      exit: {
+        type: String,
+        required: true,
+        validate: (value) => validator.isURL(value),
+      },
+    },
   },
-  // remove the version key
   { versionKey: false }
 );
 
