@@ -5,8 +5,9 @@ import Gate from "#models/gate";
 import AppError from "#utils/errors";
 
 const { GATE_CONTROLLER_URL } = process.env;
+import validator from "validator";
 
-export default {
+const gateService = {
   getGate: async (gateId) => {
     // validate the gate id format
     if (!validator.isMongoId(gateId)) {
@@ -80,3 +81,5 @@ export default {
     return true;
   },
 };
+
+export default gateService;

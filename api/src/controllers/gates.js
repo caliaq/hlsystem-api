@@ -6,13 +6,13 @@ export default {
       const { gateId } = req.params;
       // get gate
       const gate = await Service.getGate(gateId);
-
+      const { isOpen } = await Service.getGateStatus(gateId);
       // send the gate (200: OK)
       res.status(200).json({
         success: true,
         data: {
           ...gate.toObject(),
-          status: await Service.getGateStatus(gateId),
+          isOpen,
         },
       });
     } catch (error) {
@@ -24,12 +24,13 @@ export default {
     try {
       const { gateId } = req.params;
       // get gate status
-      const status = await Service.getGateStatus(gateId);
+      const req = await Service.getGateStatus(gateId);
+      const { data } = await req.json();
 
       // send the status (200: OK)
       res.status(200).json({
         success: true,
-        data: status,
+        data,
       });
     } catch (error) {
       // pass the error to the error handler middleware
