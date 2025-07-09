@@ -43,15 +43,18 @@ const upload = multer({
 export default {
   // Handle license plate image upload
   uploadLicensePlate: [
-    upload.single("plate.jpg"),
+    upload.any(), // Accept any field name
     async (req, res, next) => {
       try {
-        if (!req.file) {
+        if (!req.files || req.files.length === 0) {
           return res.status(400).json({
             success: false,
-            error: "No file uploaded. Please upload a file named 'plate.jpg'",
+            error: "No file uploaded. Please upload an image file.",
           });
         }
+
+        // Use the first uploaded file
+        const uploadedFile = req.files[0];
 
         // Return success response - always overwrites plate.jpg
         res.status(200).json({
@@ -59,7 +62,8 @@ export default {
           data: {
             message: "License plate image updated successfully",
             filename: "plate.jpg",
-            size: req.file.size,
+            originalFieldName: uploadedFile.fieldname,
+            size: uploadedFile.size,
             updatedAt: new Date().toISOString(),
           },
         });

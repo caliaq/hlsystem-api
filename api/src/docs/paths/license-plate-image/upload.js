@@ -6,7 +6,7 @@
  *     summary: Upload a license plate image
  *     description: |
  *       Uploads a license plate image file that replaces the current plate.jpg file.
- *       The file should be sent as multipart/form-data with the field name 'plate.jpg'.
+ *       The file should be sent as multipart/form-data with any field name.
  *       This endpoint always overwrites the existing license plate image.
  *       Supported formats include JPEG, PNG, GIF, and WebP. Maximum file size is 10MB.
  *     tags: [License Plate Images]
@@ -17,12 +17,12 @@
  *           schema:
  *             type: object
  *             properties:
- *               plate.jpg:
+ *               image:
  *                 type: string
  *                 format: binary
- *                 description: License plate image file
+ *                 description: License plate image file (any field name accepted)
  *             required:
- *               - plate.jpg
+ *               - image
  *     responses:
  *       200:
  *         description: Image uploaded successfully
