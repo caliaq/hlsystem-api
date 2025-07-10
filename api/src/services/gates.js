@@ -25,20 +25,22 @@ const gateService = {
     return gate;
   },
   getGateStatus: async (gateId) => {
+    const url = `${GATE_CONTROLLER_URL}/gate/${gateId}/status`;
     try {
-      console.log(`Attempting to connect to gate controller at: ${GATE_CONTROLLER_URL}/gate/${gateId}/status`);
-      const response = await fetch(
-        `${GATE_CONTROLLER_URL}/gate/${gateId}/status`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // Add timeout to prevent hanging
-          signal: AbortSignal.timeout(5000), // 5 second timeout
-        }
-      );
+      console.log(`[DEBUG] Attempting to connect to gate controller at: ${url}`);
+      console.log(`[DEBUG] GATE_CONTROLLER_URL environment variable: ${GATE_CONTROLLER_URL}`);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(5000), // 5 second timeout
+      });
 
+      console.log(`[DEBUG] Gate controller response status: ${response.status}`);
+      
       if (!response.ok) {
         const error = new Error(`Gate controller returned ${response.status}: ${response.statusText}`);
         error.statusCode = 502;
@@ -48,6 +50,7 @@ const gateService = {
       }
 
       const result = await response.json();
+      console.log(`[DEBUG] Gate controller response:`, result);
       
       if (result.status !== "success") {
         const error = new Error(result.message || "Failed to get gate status");
@@ -61,6 +64,8 @@ const gateService = {
         isOpen: result.data.is_open,
       };
     } catch (error) {
+      console.error(`[DEBUG] Error communicating with gate controller at ${url}:`, error.message);
+      
       // Handle network errors
       if (error.name === 'AbortError') {
         const timeoutError = new Error("Gate controller request timed out");
