@@ -7,7 +7,7 @@ Device.pin_factory = MockFactory()
 
 app = Flask(__name__)
 
-DELAY = 0.5
+DELAY = 10
 PINS = [LED(x) for x in [17, 27]]
 
 gate_open = False
