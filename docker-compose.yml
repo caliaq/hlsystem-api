@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   nginx:
     image: nginx:alpine
@@ -31,7 +29,7 @@ services:
   gate-controller:
     build: ./gate-controller
     expose:
-      - "8080"
+      - "3001"
     volumes:
       - ./gate-controller:/app
     restart: unless-stopped
