@@ -37,24 +37,10 @@ export default {
       next(error);
     }
   },
-  openGate: async (req, res, next) => {
+  toggleGate: async (req, res, next) => {
     try {
       const { gateId } = req.params;
-      await Service.openGate(gateId);
-
-      // send a success response (200: OK)
-      res.status(200).json({
-        success: true,
-      });
-    } catch (error) {
-      // pass the error to the error handler middleware
-      next(error);
-    }
-  },
-  closeGate: async (req, res, next) => {
-    try {
-      const { gateId } = req.params;
-      await Service.closeGate(gateId);
+      await Service.toggleGate(gateId);
 
       // send a success response (200: OK)
       res.status(200).json({

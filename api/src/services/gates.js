@@ -36,49 +36,13 @@ const gateService = {
   },
   toggleGate: async (gateId) => {
     const response = await fetch(
-      `${GATE_CONTROLLER_URL}/gate/${gateId}/toggle`,
-      { method: 'POST' }
+      `${GATE_CONTROLLER_URL}/gate/${gateId}/toggle`
     );
-    const result = await response.json();
-    if (result.status !== "success") {
+    const { status, data } = await response.json();
+    if (status !== "success") {
       throw new Error("Failed to toggle gate status");
     }
-    return result.data;
-  },
-  openGate: async (gateId) => {
-    const currentStatus = await this.getGateStatus(gateId);
-    const isOpen = currentStatus.isOpen;
-
-    if (isOpen) {
-      console.log(`Gate ${gateId} is already open.`);
-      return true; // No need to open again
-    } else {
-      const { is_open } = await this.toggleGate(gateId);
-      if (!is_open) {
-        throw new Error(`Failed to open gate ${gateId}`);
-      }
-      console.log(`Gate ${gateId} is now open.`);
-    }
-
-    return true;
-  },
-
-  closeGate: async (gateId) => {
-    const currentStatus = await this.getGateStatus(gateId);
-    const isOpen = currentStatus.isOpen;
-
-    if (!isOpen) {
-      console.log(`Gate ${gateId} is already closed.`);
-      return true; // No need to close again
-    } else {
-      const { is_open } = await this.toggleGate(gateId);
-      if (is_open) {
-        throw new Error(`Failed to close gate ${gateId}`);
-      }
-      console.log(`Gate ${gateId} is now closed.`);
-    }
-
-    return true;
+    return data;
   },
 };
 
