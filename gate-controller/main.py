@@ -9,9 +9,21 @@ gate_open = False
 def toggle_gate():
     global gate_open
     try:
-        # Run the external gate_control.py script natively on Raspberry Pi
-        script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'gate_control.py')
-        result = subprocess.run(['python3', script_path], capture_output=True, text=True, timeout=10)
+        # Run the external gate_control.py script using Docker with volume mounting
+        # This runs the script natively on the Raspberry Pi with GPIO access
+        gate_control_path = "/gate_control.py"  # Path to mounted script inside Docker
+        host_script_path = "/Users/e.japrrr/Developer/lom/api/gate_control.py"  # Adjust this path for your Raspberry Pi
+        
+        docker_cmd = [
+            'docker', 'run', '--rm', '-it',
+            '--privileged',  # Required for GPIO access
+            '--device', '/dev/gpiomem',  # Give access to GPIO
+            '-v', f'{host_script_path}:{gate_control_path}',
+            'python:3.11-slim',
+            'sh', '-c', f'pip install gpiozero && python {gate_control_path}'
+        ]
+        
+        result = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=30)
         
         if result.returncode == 0:
             gate_open = not gate_open
