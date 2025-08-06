@@ -1,9 +1,11 @@
 from flask import Flask, jsonify
 
-from gpiozero import LED
+import gpiod 
 import time
 
 app = Flask(__name__)
+
+chip = gpiod.Chip('gpiochip4')
 
 gate_open = False
 
@@ -11,13 +13,15 @@ def toggle_gate():
     global gate_open
     try:
 
-        pin = LED(27)
+        pin = chip.get_line(27)
 
-        pin.on()
+        pin.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
+
+        pin.set_value(1)
         print("on")
         time.sleep(0.5)
 
-        pin.off()
+        pin.set_value(0)
         print("off")
 
         gate_open = not gate_open
