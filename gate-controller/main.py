@@ -10,7 +10,8 @@ def toggle_gate():
     global gate_open
     try:
         # Run the external gate control script
-        script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "gate_control.py")
+        # The script is mounted into the container at /app/gate_control.py
+        script_path = "/app/gate_control.py"
         result = subprocess.run(["python3", script_path], capture_output=True, text=True, timeout=10)
         if result.returncode == 0:
             gate_open = not gate_open

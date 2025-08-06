@@ -1,1 +1,4 @@
 Flask==3.0.0
+gpiozero==2.0.1
+RPi.GPIO
+pigpio
