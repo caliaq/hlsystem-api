@@ -1,14 +1,17 @@
 from gpiozero import LED
 import time
+from gpiozero.pins.rpigpio import RPiGPIOFactory
 
 from flask import Flask, jsonify
+
+factory = RPiGPIOFactory()
 
 app = Flask(__name__)
 
 gate_open = False
 
 def toggle_gate():
-    pin = LED(27)
+    pin = LED(27, pin_factory=factory)
 
     pin.on()
     print("on")
