@@ -10,6 +10,8 @@ import sys
 import os
 from gpiozero.pins.rpigpio import RPiGPIOFactory
 from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero.pins.native import NativeFactory
+import RPi.GPIO as GPIO
 
 def setup_gpio_factory():
     """Nastavení GPIO factory s fallback možnostmi"""
