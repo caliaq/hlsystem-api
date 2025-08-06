@@ -18,15 +18,15 @@ def toggle_gate():
     print("off")
     gate_open = not gate_open
 
-@app.route('/gate/686eb0ee9984cab163af5d5b/toggle', methods=['GET'])
+@app.route('/686eb0ee9984cab163af5d5b/toggle', methods=['GET'])
 def open_gate_endpoint():
     try:
         toggle_gate()
         return jsonify({"status": "success", "data": {"is_open": gate_open}}), 200
     except Exception as e:
-        return jsonify({"status": "error", "data": {"is_open": gate_open}}), 500
+        return jsonify({"status": "error", "data": {"is_open": gate_open}, "message": str(e)}), 500
 
-@app.route('/gate/686eb0ee9984cab163af5d5b/status', methods=['GET'])
+@app.route('/686eb0ee9984cab163af5d5b/status', methods=['GET'])
 def gate_status():
     return jsonify({"status": "success", "data": {"is_open": gate_open}}), 200
 
