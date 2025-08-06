@@ -53,12 +53,12 @@ services:
     privileged: true
     devices:
       - "/dev/gpiomem4:/dev/gpiomem4"
-    cap_add:
-      - SYS_RAWIO
-    environment:
-      - GPIOZERO_PIN_FACTORY=rpigpio
-        - PIGPIO_ADDR=192.168.1.107
+      - "/dev/gpiochip0:/dev/gpiochip0"
+      - "/dev/gpiomem27:/dev/gpiomem27"
+      - "/dev/gpiochip27:/dev/gpiochip27"
     restart: unless-stopped
+    tty: true
+    stdin_open: true
 
   mongo:
     image: mongo:6
