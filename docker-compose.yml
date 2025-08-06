@@ -50,6 +50,13 @@ services:
       - "3001"
     volumes:
       - ./gate-controller:/app
+    privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+    cap_add:
+      - SYS_RAWIO
+    environment:
+      - GPIOZERO_PIN_FACTORY=rpigpio
     restart: unless-stopped
 
   mongo:
