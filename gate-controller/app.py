@@ -11,6 +11,7 @@ app = Flask(__name__)
 gate_open = False
 
 def toggle_gate():
+    global gate_open
     pin = LED(27, pin_factory=factory)
 
     pin.on()
