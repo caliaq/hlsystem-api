@@ -5,4 +5,4 @@ RUN pip3 install gpiozero
 RUN pip3 install flask
 
 COPY "./main.py" "/app/main.py"
-CMD ["python3", "main.py"]
+CMD ["python3", "/app/main.py"]
