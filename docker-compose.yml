@@ -52,7 +52,7 @@ services:
       - ./gate-controller:/app
     privileged: true
     devices:
-      - "/dev/gpiomem:/dev/gpiomem"
+      - "/dev/gpiomem4:/dev/gpiomem4"
     cap_add:
       - SYS_RAWIO
     environment:
