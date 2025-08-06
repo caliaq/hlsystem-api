@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for GPIO access
+# Install system dependencies (skip pigpio-related apt packages)
 RUN apt-get update && apt-get install -y \
     gcc \
     make \
@@ -26,4 +26,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 EXPOSE 3001
 
-CMD ["python", "main.py"]
+CMD ["python", "app.py"]

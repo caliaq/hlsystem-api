@@ -50,7 +50,6 @@ services:
       - "3001"
     volumes:
       - ./gate-controller:/app
-      - ./gate_control.py:/app/gate_control.py:ro
     privileged: true
     devices:
       - "/dev/gpiomem:/dev/gpiomem"

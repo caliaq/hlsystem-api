@@ -9,22 +9,21 @@ gate_open = False
 def toggle_gate():
     global gate_open
     try:
-        # Run the external gate control script
-        # The script is mounted into the container at /app/gate_control.py
-        script_path = "/app/gate_control.py"
-        result = subprocess.run(["python3", script_path], capture_output=True, text=True, timeout=10)
+        # Run the external gate_control.py script natively on Raspberry Pi
+        script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'gate_control.py')
+        result = subprocess.run(['python3', script_path], capture_output=True, text=True, timeout=10)
+        
         if result.returncode == 0:
             gate_open = not gate_open
-            print(f"Gate control script executed successfully: {result.stdout}")
+            print(f"Gate control executed successfully: {result.stdout}")
         else:
-            print(f"Gate control script failed: {result.stderr}")
+            print(f"Gate control failed: {result.stderr}")
             raise Exception(f"Gate control script failed: {result.stderr}")
+            
     except subprocess.TimeoutExpired:
-        print("Gate control script timed out")
         raise Exception("Gate control script timed out")
     except Exception as e:
-        print(f"Error executing gate control script: {str(e)}")
-        raise e
+        raise Exception(f"Failed to execute gate control: {str(e)}")
 
 @app.route('/686eb0ee9984cab163af5d5b/toggle', methods=['GET'])
 def open_gate_endpoint():
