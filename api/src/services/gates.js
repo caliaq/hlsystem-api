@@ -1,7 +1,7 @@
 import "dotenv/config";
 import validator from "validator";
 
-import Gate from "#models";
+import Gate from "#models/gate";
 import { AppError } from "#utils/errors";
 
 const { GATE_CONTROLLER_URL } = process.env;
