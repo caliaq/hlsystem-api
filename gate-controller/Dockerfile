@@ -26,4 +26,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 EXPOSE 3001
 
-CMD ["python", "app.py"]
+CMD ["python", "main.py"]
