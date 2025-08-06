@@ -50,13 +50,15 @@ services:
       - "3001"
     volumes:
       - ./gate-controller:/app
-    privileged: true
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN
     devices:
+      - "/dev/gpiochip0:/dev/gpiochip0"
       - "/dev/gpiochip0:/dev/gpiochip0"
     restart: unless-stopped
     tty: true
     stdin_open: true
-
   mongo:
     image: mongo:6
     ports:
