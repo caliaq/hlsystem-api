@@ -1,7 +1,7 @@
 import "dotenv/config";
 import validator from "validator";
 
-import Gate from "#models/gate";
+import Gate from "#models";
 import { AppError } from "#utils/errors";
 
 const { GATE_CONTROLLER_URL } = process.env;
@@ -25,7 +25,7 @@ const gateService = {
     return gate;
   },
   getGateStatus: async (gateId) => {
-    const url = `${GATE_CONTROLLER_URL}/gate/${gateId}/status`;
+    const url = `${GATE_CONTROLLER_URL}/${gateId}/status`;
     try {
       console.log(
         `[DEBUG] Attempting to connect to gate controller at: ${url}`
@@ -119,9 +119,7 @@ const gateService = {
     }
   },
   toggleGate: async (gateId) => {
-    const response = await fetch(
-      `${GATE_CONTROLLER_URL}/gate/${gateId}/toggle`
-    );
+    const response = await fetch(`${GATE_CONTROLLER_URL}/${gateId}/toggle`);
     const { status, data } = await response.json();
     if (status !== "success") {
       throw new Error("Failed to toggle gate status");
