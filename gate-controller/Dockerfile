@@ -7,10 +7,11 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install -r requirements.txt
-
 # Copy application code
 COPY . .
+
+
+RUN pip install -r requirements.txt
 
 # Expose port
 EXPOSE 3001
