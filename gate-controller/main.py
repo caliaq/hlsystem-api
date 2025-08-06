@@ -5,7 +5,7 @@ import time
 
 app = Flask(__name__)
 
-chip = gpiod.Chip('gpiochip4')
+chip = gpiod.Chip('gpiochip0')
 
 gate_open = False
 
