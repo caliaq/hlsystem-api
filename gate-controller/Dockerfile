@@ -1,8 +1,10 @@
-FROM ubuntu:22.04
+FROM python:3.10-slim
 
-RUN apt update &&  apt install -y python3-pip python3-lgpio python3-pigpio python3-rpi.gpio
-RUN pip3 install gpiod
-RUN pip3 install flask
+RUN apt-get update && \
+    apt-get install -y gpiod libgpiod-dev python3-libgpiod && \
+    pip install flask
 
-COPY "./main.py" "/app/main.py"
-CMD ["python3", "/app/main.py"]
+WORKDIR /app
+COPY . /app
+
+CMD ["python", "main.py"]
