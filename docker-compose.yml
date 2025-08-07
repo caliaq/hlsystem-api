@@ -26,23 +26,18 @@ services:
       - /app/node_modules
     restart: unless-stopped
 
+  # AI License Plate Recognition Service
   ai:
     build: ./ai
     depends_on:
       - api
-      - mongo
-    environment:
-      - API_URL=http://api:8080
-      - USE_WEBCAM=false
-      - CAM_ENTER_URL=rtsp://admin:123456@109.164.15.139:6002/h264
-      - CAM_EXIT_URL=rtsp://admin:123456@109.164.15.139:6001/h264
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
     volumes:
       - ./ai:/app
+      - ai-logs:/app/logs
+    network_mode: "host" # For RTSP/HTTP camera access
     restart: unless-stopped
-    # Add extra hosts for better DNS resolution if needed
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   gate-controller:
     build: ./gate-controller
@@ -96,3 +91,4 @@ services:
 
 volumes:
   mongo-data:
+  ai-logs:

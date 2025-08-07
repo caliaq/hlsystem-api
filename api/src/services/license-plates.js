@@ -46,4 +46,18 @@ export default {
       throw error;
     }
   },
+  deleteLicensePlate: async function (id) {
+    // validate the license plate id format
+    if (!validator.isMongoId(id)) {
+      throw new AppError("Invalid license plate ID format", id, 400);
+    }
+
+    // delete the license plate with the given id
+    const result = await LicensePlate.deleteOne({ _id: id });
+
+    // check if the license plate was found and deleted
+    if (result.deletedCount === 0) {
+      throw new AppError("License plate not found", id, 404);
+    }
+  },
 };

@@ -26,7 +26,7 @@ def toggle_gate():
 
         write_to_pin(27, 0)  # Turn off
         print("off")
-        time.sleep(5)  # Time when motors are on
+        time.sleep(23)  # Time when motors are on
 
         write_to_pin(27, 1)  # Turn on again
         print("on")

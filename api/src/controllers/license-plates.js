@@ -38,4 +38,22 @@ export default {
       next(error);
     }
   },
+  deleteLicensePlate: async (req, res, next) => {
+    try {
+      // get the license plate id from the request parameters
+      const { id } = req.params;
+
+      // delete the license plate with the given id
+      await Service.deleteLicensePlate(id);
+
+      // send success response (204: No Content)
+      res.status(204).json({
+        success: true,
+        data: null,
+      });
+    } catch (error) {
+      // pass the error to the error handler middleware
+      next(error);
+    }
+  },
 };
