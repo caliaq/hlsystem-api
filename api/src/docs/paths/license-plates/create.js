@@ -7,7 +7,7 @@
  *     description: |
  *       Creates a new license plate record in the system with the specified text.
  *       The license plate text is provided as a URL parameter, and additional data
- *       (such as order reference) should be provided in the request body.
+ *       (such as status: whitelisted/blacklisted) should be provided in the request body.
  *     tags: [License Plates]
  *     parameters:
  *       - $ref: '#/components/parameters/licensePlateTextParam'
@@ -18,12 +18,23 @@
  *           schema:
  *             type: object
  *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: ["whitelisted", "blacklisted"]
+ *                 description: Status of the license plate (whitelisted or blacklisted)
+ *                 example: "whitelisted"
  *               order:
  *                 type: string
  *                 description: MongoDB ObjectID reference to an order (optional)
  *                 example: "60d21b4667d0d8992e610c80"
+ *               notes:
+ *                 type: string
+ *                 description: Additional notes about the license plate
+ *                 example: "VIP guest vehicle"
  *           example:
+ *             status: "whitelisted"
  *             order: "60d21b4667d0d8992e610c80"
+ *             notes: "VIP guest vehicle"
  *     responses:
  *       201:
  *         description: License plate record successfully created
@@ -54,6 +65,19 @@
  *                 licensePlateId: "60d21b4667d0d8992e610c85"
  *       400:
  *         $ref: '#/components/responses/BadRequest'
+ *       409:
+ *         description: License plate already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "License plate already exists"
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */

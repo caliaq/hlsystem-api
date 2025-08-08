@@ -26,19 +26,6 @@ services:
       - /app/node_modules
     restart: unless-stopped
 
-  # AI License Plate Recognition Service
-  ai:
-    build: ./ai
-    depends_on:
-      - api
-    env_file:
-      - .env
-    volumes:
-      - ./ai:/app
-      - ai-logs:/app/logs
-    network_mode: "host" # For RTSP/HTTP camera access
-    restart: unless-stopped
-
   gate-controller:
     build: ./gate-controller
     expose:

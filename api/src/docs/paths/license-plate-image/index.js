@@ -1,19 +1,14 @@
 /**
  * @openapi
- * tags:
- *   - name: License Plate Images
- *     description: |
- *       Endpoints for uploading and serving license plate images.
- *       Allows uploading license plate photos and retrieving them by filename.
- *
  * components:
  *   parameters:
  *     imageFilenameParam:
- *       in: path
+ *       in: query
  *       name: filename
  *       schema:
  *         type: string
+ *         pattern: '^[a-zA-Z0-9._-]+\.(jpg|jpeg|png|gif)$'
  *       required: true
- *       description: The filename of the license plate image
+ *       description: The filename of the license plate image to retrieve
  *       example: "plate-1641234567890-123456789.jpg"
  */

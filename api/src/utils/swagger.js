@@ -29,6 +29,7 @@ const apis = [
   path.join(rootDir, "src/docs/paths/products/*.js"),
   path.join(rootDir, "src/docs/paths/license-plates/*.js"),
   path.join(rootDir, "src/docs/paths/license-plate-image/*.js"),
+  path.join(rootDir, "src/docs/paths/gates/*.js"),
 ];
 
 // Swagger definition
