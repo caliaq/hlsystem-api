@@ -56,16 +56,24 @@ export default {
         // Use the first uploaded file
         const uploadedFile = req.files[0];
 
+        const uploadData = {
+          message: "License plate image updated successfully",
+          filename: "plate.jpg",
+          originalFieldName: uploadedFile.fieldname,
+          size: uploadedFile.size,
+          updatedAt: new Date().toISOString(),
+        };
+
+        // Get WebSocket service and emit the upload notification
+        const websocketService = req.app.get("websocketService");
+        if (websocketService) {
+          websocketService.emitLicensePlateUploaded(uploadData);
+        }
+
         // Return success response - always overwrites plate.jpg
         res.status(200).json({
           success: true,
-          data: {
-            message: "License plate image updated successfully",
-            filename: "plate.jpg",
-            originalFieldName: uploadedFile.fieldname,
-            size: uploadedFile.size,
-            updatedAt: new Date().toISOString(),
-          },
+          data: uploadData,
         });
       } catch (error) {
         next(error);

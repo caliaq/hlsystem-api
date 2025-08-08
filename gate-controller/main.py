@@ -1,8 +1,11 @@
 import os
 from flask import Flask, jsonify
 import time
+import requests
 
 app = Flask(__name__)
+
+API = "http://192.168.1.107/api"
 
 gate_open = False
 
@@ -19,6 +22,7 @@ def toggle_gate():
     """Function to toggle the gate open/close"""
     global gate_open
     try:
+        requests.post(f"{API}/gates/686eb0ee9984cab163af5d5b/{'opening' if not gate_open else 'closing'}")
         # Simulate the gate opening/closing logic
         write_to_pin(27, 1)  # Turn on
         print("on")
@@ -42,6 +46,7 @@ def toggle_gate():
 
         # Toggle gate status
         gate_open = not gate_open
+        requests.post(f"{API}/gates/686eb0ee9984cab163af5d5b/{'opened' if gate_open else 'closed'}")
 
     except Exception as e:
         raise Exception(f"Failed to execute gate control: {str(e)}")

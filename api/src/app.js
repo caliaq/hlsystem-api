@@ -1,5 +1,7 @@
 // imports
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import VisitorsRouter from "#routes/visitors";
 import OrdersRouter from "#routes/orders";
 import ProductsRouter from "#routes/products";
@@ -9,9 +11,19 @@ import LicensePlateImageRouter from "#routes/license-plate-image";
 import { errorHandler } from "#middleware/errorHandler";
 import swagger from "#utils/swagger";
 import cors from "cors";
+import WebSocketService from "#services/websocket";
 
 // app declaration
 const app = express();
+
+// WebSocket service initialization middleware
+app.use((req, res, next) => {
+  const io = app.get("socketio");
+  if (io && !app.get("websocketService")) {
+    app.set("websocketService", new WebSocketService(io));
+  }
+  next();
+});
 
 // middlewares
 app.use(express.json());
