@@ -13,24 +13,24 @@ async function main() {
   try {
     // create HTTP server
     const server = createServer(app);
-    
+
     // setup Socket.IO
     const io = new Server(server, {
       cors: {
         origin: "*",
-        methods: ["GET", "POST"]
-      }
+        methods: ["GET", "POST"],
+      },
     });
 
     // make io available to the app
-    app.set('socketio', io);
+    app.set("socketio", io);
 
     // WebSocket connection handling
-    io.on('connection', (socket) => {
+    io.on("connection", (socket) => {
       console.log(`Client connected: ${socket.id}`);
 
       // Handle client disconnect
-      socket.on('disconnect', () => {
+      socket.on("disconnect", () => {
         console.log(`Client disconnected: ${socket.id}`);
       });
     });
@@ -44,7 +44,7 @@ async function main() {
     console.log(
       `Swagger documentation available at http://localhost:${API_PORT}/docs`
     );
-    console.log('WebSocket server is ready for connections');
+    console.log("WebSocket server is ready for connections");
   } catch (error) {
     // handle errors
     console.error("couldn't start the server", error);

@@ -2,12 +2,27 @@
 import Service from "#services/license-plates";
 
 export default {
-  getLicensePlates: async (req, res, next) => {
+  getWhitelist: async (req, res, next) => {
     try {
       // get all license plates
-      const licensePlates = await Service.getLicensePlates();
+      const licensePlates = await Service.getWhitelist();
 
       // send the license plates (200: OK)
+      res.status(200).json({
+        success: true,
+        data: licensePlates,
+      });
+    } catch (error) {
+      // pass the error to the error handler middleware
+      next(error);
+    }
+  },
+  getBlacklist: async (req, res, next) => {
+    try {
+      // get all blacklisted license plates
+      const licensePlates = await Service.getBlacklist();
+
+      // send the blacklisted license plates (200: OK)
       res.status(200).json({
         success: true,
         data: licensePlates,

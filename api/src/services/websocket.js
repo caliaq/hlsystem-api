@@ -14,11 +14,11 @@ export default class WebSocketService {
   emitGateOpened(gateId) {
     const message = {
       gateId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
-    console.log('Emitting gateOpened:', message);
-    this.io.emit('gateOpened', message);
+
+    console.log("Emitting gateOpened:", message);
+    this.io.emit("gateOpened", message);
   }
 
   /**
@@ -28,11 +28,11 @@ export default class WebSocketService {
   emitGateClosed(gateId) {
     const message = {
       gateId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
-    console.log('Emitting gateClosed:', message);
-    this.io.emit('gateClosed', message);
+
+    console.log("Emitting gateClosed:", message);
+    this.io.emit("gateClosed", message);
   }
 
   /**
@@ -42,11 +42,11 @@ export default class WebSocketService {
   emitGateOpening(gateId) {
     const message = {
       gateId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
-    console.log('Emitting gateOpening:', message);
-    this.io.emit('gateOpening', message);
+
+    console.log("Emitting gateOpening:", message);
+    this.io.emit("gateOpening", message);
   }
 
   /**
@@ -56,11 +56,11 @@ export default class WebSocketService {
   emitGateClosing(gateId) {
     const message = {
       gateId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
-    console.log('Emitting gateClosing:', message);
-    this.io.emit('gateClosing', message);
+
+    console.log("Emitting gateClosing:", message);
+    this.io.emit("gateClosing", message);
   }
 
   /**
@@ -70,11 +70,11 @@ export default class WebSocketService {
   emitLicensePlateUploaded(uploadData) {
     const message = {
       ...uploadData,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
-    console.log('Emitting licensePlateUploaded:', message);
-    this.io.emit('licensePlateUploaded', message);
+
+    console.log("Emitting licensePlateUploaded:", message);
+    this.io.emit("licensePlateUploaded", message);
   }
 
   /**

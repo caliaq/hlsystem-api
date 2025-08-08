@@ -20,8 +20,18 @@ const licensePlate = new Schema(
         if (value) {
           return !!(await model("Order").findById(value));
         }
-        return true;
+        return true; // If no value, skip validation
       },
+    },
+    from: {
+      type: Date,
+    },
+    to: {
+      type: Date,
+    },
+    blacklisted: {
+      type: Boolean,
+      default: false,
     },
   },
   { versionKey: false }

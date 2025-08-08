@@ -4,9 +4,11 @@ import LicensePlate from "#models/license-plate";
 import { AppError } from "#utils/errors";
 
 export default {
-  getLicensePlates: async function () {
+  getWhitelist: async function () {
     // get all license plates and populate the order reference
-    const licensePlates = await LicensePlate.find().populate("order");
+    const licensePlates = await LicensePlate.find()
+      .filter({ blacklisted: false })
+      .populate("order");
 
     // Convert mongoose documents to plain objects
     const licensePlatesObj = licensePlates.map((licensePlate) =>
@@ -14,6 +16,17 @@ export default {
     );
 
     // return the license plates
+    return licensePlatesObj;
+  },
+  getBlacklist: async function () {
+    // get all blacklisted license plates and populate the order reference
+    const licensePlates = await LicensePlate.find({ blacklisted: true });
+
+    const licensePlatesObj = licensePlates.map((licensePlate) =>
+      licensePlate.toObject ? licensePlate.toObject() : licensePlate
+    );
+
+    // return the blacklisted license plates
     return licensePlatesObj;
   },
   createLicensePlate: async function (data) {
